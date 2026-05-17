@@ -20,17 +20,26 @@ function JobForm({ setMatches, setAiResult }) {
 
         try {
 
-            const response = await API.post("/match", {
-                requiredSkills: jobData.requiredSkills
-                    .split(",")
-                    .map(skill => skill.trim()),
-                minExperience: Number(jobData.minExperience)
-            });
+            const response = await API.post(
+                "/match",
+                {
+                    requiredSkills: jobData.requiredSkills
+                        .split(",")
+                        .map(skill => skill.trim()),
+
+                    minExperience: Number(
+                        jobData.minExperience
+                    )
+                }
+            );
 
             setMatches(response.data);
 
         } catch (error) {
+
             console.log(error);
+
+            alert("Basic matching failed");
         }
     };
 
@@ -38,24 +47,52 @@ function JobForm({ setMatches, setAiResult }) {
 
         try {
 
+            setAiResult([
+                {
+                    rank: "...",
+                    name: "Loading...",
+                    reason:
+                        "Generating AI recommendations..."
+                }
+            ]);
+
             const response = await API.post(
                 "/ai/shortlist",
                 {
                     requiredSkills: jobData.requiredSkills
                         .split(",")
                         .map(skill => skill.trim()),
-                    minExperience: Number(jobData.minExperience)
+
+                    minExperience: Number(
+                        jobData.minExperience
+                    )
                 }
             );
 
-            setAiResult(response.data.recommendation);
+            console.log(
+                "AI RESPONSE =>",
+                response.data
+            );
+
+            setAiResult(response.data);
 
         } catch (error) {
+
             console.log(error);
+
+            setAiResult([
+                {
+                    rank: "Error",
+                    name: "AI Request Failed",
+                    reason:
+                        "Backend or AI API error occurred."
+                }
+            ]);
         }
     };
 
     return (
+
         <div className="bg-slate-800 p-6 rounded-xl">
 
             <h2 className="text-2xl font-bold mb-4">
@@ -86,14 +123,26 @@ function JobForm({ setMatches, setAiResult }) {
 
                     <button
                         onClick={handleBasicMatch}
-                        className="bg-green-600 px-6 py-3 rounded hover:bg-green-700"
+                        className="
+                            bg-green-600
+                            px-6
+                            py-3
+                            rounded
+                            hover:bg-green-700
+                        "
                     >
                         Basic Match
                     </button>
 
                     <button
                         onClick={handleAIMatch}
-                        className="bg-purple-600 px-6 py-3 rounded hover:bg-purple-700"
+                        className="
+                            bg-purple-600
+                            px-6
+                            py-3
+                            rounded
+                            hover:bg-purple-700
+                        "
                     >
                         AI Match
                     </button>
